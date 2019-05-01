@@ -40,11 +40,7 @@
 			<type>1</type>
 			<location>PARENT-2-PROJECT_LOC/Src/main.c</location>
 		</link>
-    <link>
-			<name>Application/User/app_x-cube-ai.c</name>
-			<type>1</type>
-			<location>PARENT-2-PROJECT_LOC/Src/app_x-cube-ai.c</location>
-		</link>
+    
     <link>
 			<name>Application/User/stm32f4xx_it.c</name>
 			<type>1</type>
@@ -179,5 +175,9 @@
       <name>Drivers/STM32F4xx_HAL_Driver/stm32f4xx_hal_i2s_ex.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_i2s_ex.c</location>
+    </link><link>
+      <name>Application/User/app_x-cube-ai.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Src/app_x-cube-ai.c</location>
     </link></linkedResources>
 </projectDescription>

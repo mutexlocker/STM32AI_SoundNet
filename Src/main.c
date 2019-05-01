@@ -29,7 +29,19 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
+#define AUDIO_BUFFER_SIZE 8192
+#define WR_BUFFER_SIZE 10000
+typedef struct {
+  int32_t offset;
+  uint32_t fptr;
+}Audio_BufferTypeDef;
 
+typedef enum
+{
+  BUFFER_OFFSET_NONE = 0,
+  BUFFER_OFFSET_HALF,
+  BUFFER_OFFSET_FULL,
+}BUFFER_StateTypeDef;
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -54,7 +66,27 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
+uint8_t pHeaderBuff[44];
+uint16_t WrBuffer[WR_BUFFER_SIZE];
 
+static uint16_t RecBuf[2*PCM_OUT_SIZE];
+static uint16_t InternalBuffer[INTERNAL_BUFF_SIZE];
+__IO uint32_t ITCounter = 0;
+Audio_BufferTypeDef  BufferCtl;
+
+/* Temporary data sample */
+__IO uint32_t AUDIODataReady = 0, AUDIOBuffOffset = 0;
+
+/* Variable used to replay audio sample (from play or record test) */
+extern uint32_t AudioTest;
+
+/* Variable used for play in infinite loop */
+extern __IO uint8_t UserPressButton;
+
+/* Variables used in norma mode to manage audio file during DMA transfer */
+extern uint32_t AudioTotalSize; /* This variable holds the total size of the audio file */
+extern uint32_t AudioRemSize;   /* This variable holds the remaining data in audio file */
+extern uint16_t *CurrentPos ; /* This variable holds the current position of audio pointer */
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -66,12 +98,20 @@ static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
 static void MX_I2S2_Init(void);
 /* USER CODE BEGIN PFP */
+void AudioRecord_Test(void);
 
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+void AudioRecord_Test(void) {
+	  BufferCtl.offset = BUFFER_OFFSET_NONE;
+	  if(BSP_AUDIO_IN_Init(DEFAULT_AUDIO_IN_FREQ, DEFAULT_AUDIO_IN_BIT_RESOLUTION, DEFAULT_AUDIO_IN_CHANNEL_NBR) != AUDIO_OK)
+	  {
+	    /* Record Error */
+	    Error_Handler();
+	}
+}
 /* USER CODE END 0 */
 
 /**
@@ -97,24 +137,30 @@ int main(void)
   SystemClock_Config();
 
   /* USER CODE BEGIN SysInit */
-
+  BSP_PB_Init(BUTTON_KEY,0);
+  BSP_LED_Init(LED3);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-  MX_GPIO_Init();
+//  MX_GPIO_Init();
   MX_CRC_Init();
+//  MX_I2C1_Init();
+//  MX_SPI1_Init();
+//  MX_I2S2_Init();
   MX_X_CUBE_AI_Init();
-  //MX_I2C1_Init();
-  //MX_SPI1_Init();
-  //MX_I2S2_Init();
   /* USER CODE BEGIN 2 */
-
+  AudioRecord_Test();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  if( BSP_PB_GetState(BUTTON_KEY)){
+		  BSP_LED_Toggle(LED3);
+		  HAL_Delay(500);
+
+	  }
     /* USER CODE END WHILE */
 
   MX_X_CUBE_AI_Process();
@@ -457,7 +503,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-
+   BSP_LED_On(LED6);
   /* USER CODE END Error_Handler_Debug */
 }
 
