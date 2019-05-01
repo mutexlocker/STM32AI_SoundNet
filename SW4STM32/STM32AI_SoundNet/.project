@@ -179,5 +179,9 @@
       <name>Application/User/app_x-cube-ai.c</name>
       <type>1</type>
       <location>PARENT-2-PROJECT_LOC/Src/app_x-cube-ai.c</location>
+    </link><link>
+      <name>Application/User/pdm2pcm.c</name>
+      <type>1</type>
+      <location>PARENT-2-PROJECT_LOC/Src/pdm2pcm.c</location>
     </link></linkedResources>
 </projectDescription>

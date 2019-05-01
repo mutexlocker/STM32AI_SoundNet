@@ -38,7 +38,7 @@ Application/User/stm32f4xx_it.o: \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/cs43l22.h \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/../Components/cs43l22/../Common/audio.h \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h \
- /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
+ /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Inc/stm32f4xx_it.h
 
 /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Inc/main.h:
@@ -117,6 +117,6 @@ Application/User/stm32f4xx_it.o: \
 
 /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/stm32f4_discovery.h:
 
-/Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
+/Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
 
 /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Inc/stm32f4xx_it.h:

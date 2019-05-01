@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "pdm2pcm.h"
 #include "app_x-cube-ai.h"
 
 /* Private includes ----------------------------------------------------------*/
@@ -142,12 +143,13 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
+  MX_GPIO_Init();
   MX_CRC_Init();
-//  MX_I2C1_Init();
-//  MX_SPI1_Init();
-//  MX_I2S2_Init();
+  MX_I2C1_Init();
+  MX_SPI1_Init();
+  MX_I2S2_Init();
   MX_X_CUBE_AI_Init();
+  MX_PDM2PCM_Init();
   /* USER CODE BEGIN 2 */
   AudioRecord_Test();
   /* USER CODE END 2 */
@@ -240,6 +242,7 @@ static void MX_CRC_Init(void)
   {
     Error_Handler();
   }
+  __HAL_CRC_DR_RESET(&hcrc);
   /* USER CODE BEGIN CRC_Init 2 */
 
   /* USER CODE END CRC_Init 2 */

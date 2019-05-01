@@ -36,7 +36,7 @@ Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.o: \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_pwr_ex.h \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_spi.h \
  /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h \
- /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h
+ ../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h
 
 ../Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.h:
 
@@ -110,4 +110,4 @@ Drivers/BSP/STM32F4-Discovery/stm32f4_discovery_audio.o: \
 
 /Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/Drivers/STM32F4xx_HAL_Driver/Inc/stm32f4xx_hal_uart.h:
 
-/Users/nimaaghli/Documents/workspace/STM32AI_SoundNet/SW4STM32/STM32AI_SoundNet/Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
+../Drivers/BSP/STM32F4-Discovery/../../../Middlewares/ST/STM32_Audio/Addons/PDM/Inc/pdm2pcm_glo.h:
