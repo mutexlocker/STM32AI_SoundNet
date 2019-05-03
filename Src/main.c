@@ -31,7 +31,7 @@
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
 #define AUDIO_BUFFER_SIZE 8192
-#define WR_BUFFER_SIZE 10000
+#define WR_BUFFER_SIZE 0x7000
 typedef struct {
   int32_t offset;
   uint32_t fptr;
@@ -95,12 +95,30 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_CRC_Init(void);
 void MX_USART2_UART_Init(void);
-static void MX_I2C1_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_I2C1_Init(void);
 static void MX_I2S2_Init(void);
 /* USER CODE BEGIN PFP */
 void AudioRecord_Test(void);
+/**
+  * @brief Calculates the remaining file size and new position of the pointer.
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_IN_TransferComplete_CallBack(void)
+{
+  BufferCtl.offset = BUFFER_OFFSET_FULL;
+}
 
+/**
+  * @brief  Manages the DMA Half Transfer complete interrupt.
+  * @param  None
+  * @retval None
+  */
+void BSP_AUDIO_IN_HalfTransfer_CallBack(void)
+{
+  BufferCtl.offset = BUFFER_OFFSET_HALF;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -111,7 +129,91 @@ void AudioRecord_Test(void) {
 	  {
 	    /* Record Error */
 	    Error_Handler();
-	}
+	  }
+	  /* Turn ON LED3: start record */
+	    BSP_LED_On(LED6);
+
+	    /* Start the record */
+	    if (BSP_AUDIO_IN_Record((uint16_t*)&InternalBuffer[0], INTERNAL_BUFF_SIZE) != AUDIO_OK)
+	    {
+	      /* Record Error */
+	      Error_Handler();
+	    }
+	    BufferCtl.fptr = 0;
+
+	    AUDIODataReady = 0;
+
+	    /* Wait for the data to be ready with PCM form */
+	    while (AUDIODataReady != 2)
+	    {
+	      if(BufferCtl.offset == BUFFER_OFFSET_HALF)
+	      {
+	        /* PDM to PCM data convert */
+	        BSP_AUDIO_IN_PDMToPCM((uint16_t*)&InternalBuffer[0], (uint16_t*)&RecBuf[0]);
+
+	        /* Copy PCM data in internal buffer */
+	        memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*2)], RecBuf, PCM_OUT_SIZE*4);
+
+	        BufferCtl.offset = BUFFER_OFFSET_NONE;
+
+	        if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*4))-1)
+	        {
+	          AUDIODataReady = 1;
+	          AUDIOBuffOffset = 0;
+	          ITCounter++;
+	        }
+	        else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
+	        {
+	          AUDIODataReady = 2;
+	          AUDIOBuffOffset = WR_BUFFER_SIZE/2;
+	          ITCounter = 0;
+	        }
+	        else
+	        {
+	          ITCounter++;
+	        }
+
+	      }
+
+	      if(BufferCtl.offset == BUFFER_OFFSET_FULL)
+	      {
+	        /* PDM to PCM data convert */
+	        BSP_AUDIO_IN_PDMToPCM((uint16_t*)&InternalBuffer[INTERNAL_BUFF_SIZE/2], (uint16_t*)&RecBuf[0]);
+
+	        /* Copy PCM data in internal buffer */
+	        memcpy((uint16_t*)&WrBuffer[ITCounter * (PCM_OUT_SIZE*2)], RecBuf, PCM_OUT_SIZE*4);
+
+	        BufferCtl.offset = BUFFER_OFFSET_NONE;
+
+	        if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*4))-1)
+	        {
+	          AUDIODataReady = 1;
+	          AUDIOBuffOffset = 0;
+	          ITCounter++;
+	        }
+	        else if(ITCounter == (WR_BUFFER_SIZE/(PCM_OUT_SIZE*2))-1)
+	        {
+	          AUDIODataReady = 2;
+
+	          AUDIOBuffOffset = WR_BUFFER_SIZE/2;
+	          ITCounter = 0;
+	        }
+	        else
+	        {
+	          ITCounter++;
+	        }
+	      }
+	    };
+
+	    /* Stop audio record */
+	    if (BSP_AUDIO_IN_Stop() != AUDIO_OK)
+	    {
+	      /* Record Error */
+	      Error_Handler();
+	    }
+
+	    /* Turn OFF LED3: record stopped */
+	    BSP_LED_Off(LED6);
 }
 /* USER CODE END 0 */
 
@@ -140,16 +242,19 @@ int main(void)
   /* USER CODE BEGIN SysInit */
   BSP_PB_Init(BUTTON_KEY,0);
   BSP_LED_Init(LED3);
+  BSP_LED_Init(LED4);
+  BSP_LED_Init(LED5);
+  BSP_LED_Init(LED6);
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_CRC_Init();
-  MX_I2C1_Init();
-  MX_SPI1_Init();
-  MX_I2S2_Init();
   MX_X_CUBE_AI_Init();
   MX_PDM2PCM_Init();
+  //MX_SPI1_Init();
+  //MX_I2C1_Init();
+  //MX_I2S2_Init();
   /* USER CODE BEGIN 2 */
   AudioRecord_Test();
   /* USER CODE END 2 */
@@ -158,9 +263,11 @@ int main(void)
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+
 	  if( BSP_PB_GetState(BUTTON_KEY)){
-		  BSP_LED_Toggle(LED3);
-		  HAL_Delay(500);
+		  //HAL_Delay(100);
+
+
 
 	  }
     /* USER CODE END WHILE */
@@ -302,8 +409,8 @@ static void MX_I2S2_Init(void)
   hi2s2.Init.Mode = I2S_MODE_MASTER_TX;
   hi2s2.Init.Standard = I2S_STANDARD_PHILIPS;
   hi2s2.Init.DataFormat = I2S_DATAFORMAT_16B;
-  hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_ENABLE;
-  hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_8K;
+  hi2s2.Init.MCLKOutput = I2S_MCLKOUTPUT_DISABLE;
+  hi2s2.Init.AudioFreq = I2S_AUDIOFREQ_96K;
   hi2s2.Init.CPOL = I2S_CPOL_LOW;
   hi2s2.Init.ClockSource = I2S_CLOCK_PLL;
   hi2s2.Init.FullDuplexMode = I2S_FULLDUPLEXMODE_ENABLE;
@@ -506,7 +613,7 @@ void Error_Handler(void)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-   BSP_LED_On(LED6);
+   BSP_LED_On(LED5);
   /* USER CODE END Error_Handler_Debug */
 }
 
